@@ -10,18 +10,28 @@ app.use(express.static("public"));  //for css styling
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
-//schema setup
+//schema setup for adding items
 const shopacartSchema = new mongoose.Schema({
     name: String,
     category: String,
     price: Number,
     description: String,
-    image: String,
+    image: String
+});
+
+//schema setup for new signups
+const userSignUpSchema = new mongoose.Schema({
+    firstname: String,
+    lastname: String,
+    username: String,
+    password: String
 });
 
 let Shopacart = mongoose.model("Shopacart", shopacartSchema);
 
-//add item to shopacart database
+let userSignUp = mongoose.model("userSignUp", userSignUpSchema);
+
+// add item to shopacart database
 // Shopacart.create(
 //     {
 //         name: "Ninjago 7200 DPI Wireless Optical Mouse",
@@ -31,7 +41,7 @@ let Shopacart = mongoose.model("Shopacart", shopacartSchema);
 //         image: "https://images-na.ssl-images-amazon.com/images/I/71weWdliAOL._SL1500_.jpg"
 //     }, (err, item) => {
 //         if(err) {
-//             console.log("Error!");
+//             console.log("Error adding item to Shopacart database");
 //             console.log(err);
 //         } else {
 //             console.log("New item added!");
@@ -39,8 +49,31 @@ let Shopacart = mongoose.model("Shopacart", shopacartSchema);
 //         }
 // });
 
+//add new signup to userSignUp
+// userSignUp.create(
+//     {
+//         username: "test1",
+//         password: "password123"
+//     }, (err, signup) => {
+//         if(err) {
+//             console.log("error adding new sign up to userSignUp database");
+//             console.log(err);
+//         } else {
+//             console.log("New signup added!");
+//             console.log(signup);
+//         }
+// });
+
 app.get("/", (req, res) => {
     res.render("homepage");
+});
+
+app.get("/signup", (req, res) => {
+    res.render("signuppage");
+});
+
+app.get("/login", (req, res) => {
+    res.render("loginpage");
 });
 
 //index route
@@ -70,6 +103,23 @@ app.post("/items", (req, res) => {
             console.log(err);
         } else {
             res.redirect("/items");
+        }
+    });
+});
+
+//login page 
+app.post("/signup", (req, res) => {
+    let firstname = req.body.firstname;
+    let lastname = req.body.lastname;
+    let username = req.body.username;
+    let password = req.body.password;
+    let newSignup = {firstname: firstname, lastname: lastname, username: username, password: password};
+    userSignUp.create(newSignup, (err, newSignup) => {
+        if(err) {
+            console.log("Error on signup page");
+            console.log(err);
+        } else {
+            res.redirect("/");
         }
     });
 });
